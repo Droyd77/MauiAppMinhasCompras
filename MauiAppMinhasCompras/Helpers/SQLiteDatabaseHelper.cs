@@ -9,13 +9,13 @@ namespace MauiAppMinhasCompras.Helpers
         public SQLiteDatabaseHelper(string path)
         {
             _conn = new SQLiteAsyncConnection(path);
-            _conn.CreteTableAsync<Produto>().Wait();
+            _conn.CreateTableAsync<Produto>().Wait();
         }
         public Task<int> Insert(Produto p)
         {
             return _conn.InsertAsync(p);
         }
-        public Task<List<Produto>> update(Produto p)
+        public Task<List<Produto>> Update(Produto p)
         {
             string sql = "UPDATE Produto SET Descricao=?, Quantidade =?, Preco = ? WHERE Id=?";
             return _conn.QueryAsync<Produto>(
@@ -25,14 +25,14 @@ namespace MauiAppMinhasCompras.Helpers
         {
             return _conn.Table<Produto>().DeleteAsync(i => i.Id == id);
         }
-        public void getAll()
+        public Task<List<Produto>> GetAll()
         {
-            _conn.Table<Produto>().ToListAsync();
+            return _conn.Table<Produto>().ToListAsync();
         }
-        public Task<List<Produto> search(string q)
+        public Task<List<Produto>> Search(string q)
         {
-            string sql = "SELECT *  Produto WHERE descricao LIKE '%" + q + "%'";
-            return _conn.QueryAsync<Produto>(sql);
+            string sql = "SELECT * FROM Produto WHERE Descricao LIKE ?";
+            return _conn.QueryAsync<Produto>(sql, "%" + q + "%");
         }
     }
 }
