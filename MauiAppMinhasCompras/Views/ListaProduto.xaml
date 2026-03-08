@@ -11,7 +11,7 @@
         <ToolbarItem Text="Adicionar" Clicked="ToolbarItem_Clicked"/>
 
     </ContentPage.ToolbarItems>
-    
+
 
     <VerticalStackLayout Padding="20" Spacing="15" >
         <Label Text="Lista de Produtos" 
@@ -19,6 +19,6 @@
        HorizontalOptions="Center" 
        FontFamily="BAUHS93"  TextColor="Black"
        />
-        
+
     </VerticalStackLayout>
 </ContentPage>
