@@ -18,10 +18,18 @@ public partial class ListaProduto : ContentPage
 
     protected async override void OnAppearing()
     {
-        lista.Clear();
+        try
+        {
+            lista.Clear();
 
-        List<Produto> Tmp = await App.Db.GetAll();
-		Tmp.ForEach( i => lista.Add(i));
+            List<Produto> Tmp = await App.Db.GetAll();
+	    	Tmp.ForEach( i => lista.Add(i));
+        }
+        catch (Exception ex)
+        {
+           await DisplayAlert("Ops", ex.Message, "OK");
+
+        }
     }
 
     private void ToolbarItem_Clicked(object sender, EventArgs e)
@@ -40,23 +48,42 @@ public partial class ListaProduto : ContentPage
 
     private async void txt_search_TextChanged(object sender, TextChangedEventArgs e)
     {
+        try
+        { 
 		string q = e.NewTextValue;
 		lista.Clear();
 
         List<Produto> Tmp = await App.Db.Search(q);
         Tmp.ForEach(i => lista.Add(i));
+        }
+        catch (Exception ex)
+        {
+            DisplayAlert("Ops", ex.Message, "OK");
+
+        }
     }
 
     private void ToolbarItem_Clicked_1(object sender, EventArgs e)
     {
+        try
+           {
+            
 		double soma = lista.Sum(i => i.Total);
 		string msg = $"O total é {soma:C}";
 		DisplayAlert("Total dos Produtos", msg, "Ok");
+        }
+        catch (Exception ex)
+        {
+            DisplayAlert("Ops", ex.Message, "OK");
 
+        }
     }
 
     private async void MenuItem_Clicked(object sender, EventArgs e)
     {
+
+        try
+        { 
         MenuItem menu = sender as MenuItem;
         Produto produtoSelecionado = menu.BindingContext as Produto;
 
@@ -71,5 +98,31 @@ public partial class ListaProduto : ContentPage
             await App.Db.Delete(produtoSelecionado.Id);
             lista.Remove(produtoSelecionado);
         }
+        }
+        catch (Exception ex)
+        {
+            DisplayAlert("Ops", ex.Message, "OK");
+
+        }
+    }
+
+    private void lst_produtos_ItemSelected(object sender, SelectedItemChangedEventArgs e)
+    {
+
+        try
+        {
+
+            Produto p = e.SelectedItem as Produto;
+            Navigation.PushAsync(new Views.EditarProduto
+            {
+                BindingContext = p,
+            });
+        }
+
+        catch (Exception ex)
+        {
+            DisplayAlert("Ops", ex.Message, "OK");
+        }
+
     }
 }
