@@ -18,7 +18,6 @@ namespace MauiAppMinhasCompras.Helpers
             return _conn.InsertAsync(p);
         }
 
-        // Update com SQL raw (igual ao original) + novos campos Categoria e DataCadastro
         public Task<List<Produto>> Update(Produto p)
         {
             string sql = "UPDATE Produto SET Descricao=?, Quantidade=?, Preco=?, Categoria=?, DataCadastro=? WHERE Id=?";
@@ -36,7 +35,6 @@ namespace MauiAppMinhasCompras.Helpers
             return _conn.Table<Produto>().ToListAsync();
         }
 
-        // Search com SQL raw (igual ao original)
         public Task<List<Produto>> Search(string q)
         {
             string sql = "SELECT * FROM Produto WHERE Descricao LIKE ?";
@@ -63,14 +61,15 @@ namespace MauiAppMinhasCompras.Helpers
         }
 
         // ── Desafio 2: Filtro por Período ────────────────────────────
-
-        public Task<List<Produto>> GetByPeriodo(DateTime dataInicio, DateTime dataFim)
+        // SQLite-net armazena DateTime como ticks (inteiro) internamente,
+        // por isso a comparação é feita via LINQ após carregar os dados.
+        public async Task<List<Produto>> GetByPeriodo(DateTime dataInicio, DateTime dataFim)
         {
-            string sql = "SELECT * FROM Produto WHERE DataCadastro >= ? AND DataCadastro <= ?";
-            return _conn.QueryAsync<Produto>(
-                sql,
-                dataInicio.Date.ToString("yyyy-MM-dd"),
-                dataFim.Date.AddDays(1).AddSeconds(-1).ToString("yyyy-MM-dd HH:mm:ss"));
+            var todos = await _conn.Table<Produto>().ToListAsync();
+            return todos
+                .Where(p => p.DataCadastro.Date >= dataInicio.Date &&
+                            p.DataCadastro.Date <= dataFim.Date)
+                .ToList();
         }
     }
 }

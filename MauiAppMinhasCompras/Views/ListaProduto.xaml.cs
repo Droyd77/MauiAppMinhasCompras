@@ -7,6 +7,7 @@ namespace MauiAppMinhasCompras.Views;
 public partial class ListaProduto : ContentPage
 {
     ObservableCollection<Produto> lista = new ObservableCollection<Produto>();
+    bool _carregando = false; // flag para evitar duplo carregamento
 
     public ListaProduto()
     {
@@ -14,7 +15,6 @@ public partial class ListaProduto : ContentPage
         lst_produtos.ItemsSource = lista;
     }
 
-    // Helper centralizado — resolve o aviso de plataforma em um único lugar
     private Task Alerta(string titulo, string msg) =>
         MainThread.InvokeOnMainThreadAsync(() => DisplayAlert(titulo, msg, "OK"));
 
@@ -22,14 +22,37 @@ public partial class ListaProduto : ContentPage
     {
         try
         {
-            lista.Clear();
-            List<Produto> Tmp = await App.Db.GetAll();
-            Tmp.ForEach(i => lista.Add(i));
+            _carregando = true;
+
+            // Salva a categoria selecionada antes de recarregar o Picker
+            string? categoriaSalva = pkr_filtro_categoria.SelectedItem?.ToString();
+
+            // 1. Recarrega categorias no Picker
             await CarregarCategorias();
+
+            // 2. Restaura a categoria que estava selecionada (se ainda existir)
+            if (!string.IsNullOrEmpty(categoriaSalva) && categoriaSalva != "Todas")
+            {
+                int idx = pkr_filtro_categoria.Items.IndexOf(categoriaSalva);
+                if (idx >= 0)
+                    pkr_filtro_categoria.SelectedIndex = idx;
+            }
+
+            // 3. Carrega a lista respeitando o filtro ativo
+            lista.Clear();
+            string categoriaAtual = pkr_filtro_categoria.SelectedItem?.ToString() ?? "Todas";
+            List<Produto> Tmp = categoriaAtual == "Todas"
+                ? await App.Db.GetAll()
+                : await App.Db.GetByCategoria(categoriaAtual);
+            Tmp.ForEach(i => lista.Add(i));
         }
         catch (Exception ex)
         {
             await Alerta("Ops", ex.Message);
+        }
+        finally
+        {
+            _carregando = false;
         }
     }
 
@@ -39,7 +62,7 @@ public partial class ListaProduto : ContentPage
         pkr_filtro_categoria.Items.Clear();
         pkr_filtro_categoria.Items.Add("Todas");
         categorias.ForEach(c => pkr_filtro_categoria.Items.Add(c));
-        pkr_filtro_categoria.SelectedIndex = 0;
+        pkr_filtro_categoria.SelectedIndex = 0; // não dispara duplicata pois _carregando = true
     }
 
     // Botão Adicionar
@@ -89,6 +112,9 @@ public partial class ListaProduto : ContentPage
     // Desafio 1: filtro por categoria via Picker
     private async void pkr_filtro_categoria_SelectedIndexChanged(object sender, EventArgs e)
     {
+        // ignora o evento enquanto OnAppearing está populando o Picker
+        if (_carregando) return;
+
         try
         {
             string categoriaSelecionada = pkr_filtro_categoria.SelectedItem?.ToString() ?? "Todas";
