@@ -1,0 +1,111 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiAppMinhasCompras.Views.RelatorioProduto"
+             Title="Relatório de Compras"
+             BackgroundColor="LightGreen">
+
+    <ScrollView>
+        <VerticalStackLayout Spacing="12" Padding="15">
+
+            <Label Text="📊 Relatório de Compras"
+                   FontSize="22"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"
+                   TextColor="Black"/>
+
+            <!-- ══ Desafio 1: Relatório por Categoria ══ -->
+            <Frame BorderColor="Green" Padding="10" CornerRadius="8" BackgroundColor="White">
+                <VerticalStackLayout Spacing="8">
+
+                    <Label Text="🏷 Gastos por Categoria"
+                           FontAttributes="Bold"
+                           FontSize="16"
+                           TextColor="Green"/>
+
+                    <Button Text="📋 Gerar Relatório por Categoria"
+                            BackgroundColor="Green"
+                            TextColor="White"
+                            CornerRadius="6"
+                            Clicked="Btn_RelatorioCategorias_Clicked"/>
+
+                    <Grid x:Name="grd_categorias" RowSpacing="2"/>
+
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- ══ Desafio 2: Filtro por Período ══ -->
+            <Frame BorderColor="Green" Padding="10" CornerRadius="8" BackgroundColor="White">
+                <VerticalStackLayout Spacing="8">
+
+                    <Label Text="🗓 Compras por Período"
+                           FontAttributes="Bold"
+                           FontSize="16"
+                           TextColor="Green"/>
+
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="10">
+                        <VerticalStackLayout Grid.Column="0">
+                            <Label Text="Data Inicial:" FontAttributes="Bold"/>
+                            <DatePicker x:Name="dtp_inicio" Format="dd/MM/yyyy"/>
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="1">
+                            <Label Text="Data Final:" FontAttributes="Bold"/>
+                            <DatePicker x:Name="dtp_fim" Format="dd/MM/yyyy"/>
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <Button Text="🔍 Filtrar por Período"
+                            BackgroundColor="Green"
+                            TextColor="White"
+                            CornerRadius="6"
+                            Clicked="Btn_FiltrarPeriodo_Clicked"/>
+
+                    <Label x:Name="lbl_periodo_titulo"
+                           FontAttributes="Bold"
+                           TextColor="Green"
+                           IsVisible="False"/>
+
+                    <Frame x:Name="frm_lista" Padding="0" IsVisible="False">
+                        <ListView x:Name="lst_relatorio"
+                                  HasUnevenRows="True"
+                                  HeightRequest="300">
+
+                            <ListView.Header>
+                                <Grid ColumnDefinitions="*,70,65,85"
+                                      BackgroundColor="{StaticResource Gray100}"
+                                      Padding="5,3">
+                                    <Label Grid.Column="0" Text="Produto"   FontAttributes="Bold" FontSize="12"/>
+                                    <Label Grid.Column="1" Text="Categoria" FontAttributes="Bold" FontSize="12"/>
+                                    <Label Grid.Column="2" Text="Data"      FontAttributes="Bold" FontSize="12"/>
+                                    <Label Grid.Column="3" Text="Total"     FontAttributes="Bold" FontSize="12"/>
+                                </Grid>
+                            </ListView.Header>
+
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <ViewCell>
+                                        <Grid ColumnDefinitions="*,70,65,85" Padding="5,4">
+                                            <Label Grid.Column="0" Text="{Binding Descricao}"    FontSize="12"/>
+                                            <Label Grid.Column="1" Text="{Binding Categoria}"    FontSize="11" TextColor="Gray"/>
+                                            <Label Grid.Column="2" Text="{Binding DataCadastro, StringFormat='{0:dd/MM}'}" FontSize="11" TextColor="Gray"/>
+                                            <Label Grid.Column="3" Text="{Binding Total,         StringFormat='R$ {0:F2}'}" FontSize="12" TextColor="Green"/>
+                                        </Grid>
+                                    </ViewCell>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+
+                        </ListView>
+                    </Frame>
+
+                    <Label x:Name="lbl_total_periodo"
+                           FontAttributes="Bold"
+                           FontSize="15"
+                           HorizontalOptions="End"
+                           TextColor="Green"
+                           IsVisible="False"/>
+
+                </VerticalStackLayout>
+            </Frame>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
