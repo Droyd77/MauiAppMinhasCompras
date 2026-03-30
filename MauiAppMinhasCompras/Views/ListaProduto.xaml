@@ -22,7 +22,7 @@
 
     <!-- Grid com 4 linhas: título, busca, filtro, lista (lista ocupa o espaço restante com *) -->
     <Grid Padding="20" RowSpacing="10"
-          RowDefinitions="Auto,Auto,Auto,*">
+          RowDefinitions="Auto,Auto,Auto,*" >
 
         <!-- Linha 0: Título -->
         <Label Grid.Row="0"
@@ -37,7 +37,7 @@
                    x:Name="txt_search"
                    Margin="-15,0,0,0"
                    Placeholder="Busca de Produtos"
-                   TextChanged="txt_search_TextChanged"/>
+                   TextChanged="txt_search_TextChanged" BackgroundColor="White" />
 
         <!-- Linha 2: Filtro por categoria (Desafio 1) -->
         <Grid Grid.Row="2" ColumnDefinitions="Auto,*" ColumnSpacing="8">
@@ -46,7 +46,7 @@
                     x:Name="pkr_filtro_categoria"
                     Title="Todas"
                     HorizontalOptions="Fill"
-                    SelectedIndexChanged="pkr_filtro_categoria_SelectedIndexChanged"/>
+                    SelectedIndexChanged="pkr_filtro_categoria_SelectedIndexChanged" BackgroundColor="White"/>
         </Grid>
 
         <!-- Linha 3: Frame + ListView ocupa todo o espaço restante -->
